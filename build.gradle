@@ -13,3 +13,75 @@ buildscript {
 task wrapper(type: Wrapper) {
     gradleVersion = '2.13'
 }
+
+subprojects {
+    apply plugin: 'maven'
+
+    configurations {
+        deployerJars
+    }
+
+    dependencies {
+        deployerJars 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2'
+    }
+
+    afterEvaluate {
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+                    if (project.hasProperty('preferedRepo') && project.hasProperty('preferedUsername')
+                            && project.hasProperty('preferedPassword')) {
+                        configuration = configurations.deployerJars
+                        repository(url: preferedRepo) {
+                            authentication(userName: preferedUsername, password: preferedPassword)
+                        }
+                    } else if (project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')) {
+                        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                        repository(url: sonatypeRepositoryUrl) {
+                            authentication(userName: sonatypeUsername, password: sonatypePassword)
+                        }
+                    } else {
+                        println "Settings sonatypeUsername/sonatypePassword missing/incomplete for ${project.name}"
+                    }
+
+                    pom.project {
+                        packaging 'jar'
+                        url 'http://greenrobot.org/greendao'
+
+                        scm {
+                            // TODO change those
+                            url 'https://github.com/greenrobot/greenDAO'
+                            connection 'scm:git@github.com:greenrobot/greenDAO.git'
+                            developerConnection 'scm:git@github.com:greenrobot/greenDAO.git'
+                        }
+
+                        licenses {
+                            license {
+                                name 'TBD'
+                                url 'TBD'
+                                distribution 'repo'
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id 'greenrobot'
+                                name 'greenrobot'
+                            }
+                        }
+
+                        issueManagement {
+                            system 'GitHub Issues'
+                            url 'https://github.com/greenrobot/greenDAO/issues'
+                        }
+
+                        organization {
+                            name 'greenrobot'
+                            url 'http://greenrobot.org'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

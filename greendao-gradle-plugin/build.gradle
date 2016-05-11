@@ -18,17 +18,10 @@ repositories {
 dependencies {
     compile gradleApi()
     compile project(':greendao-code-modifier')
-    compileOnly 'com.android.tools.build:gradle:2.0.0'
+    compileOnly 'com.android.tools.build:gradle:2.1.0'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-all:1.10.19'
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-        }
-    }
 }
 
 def genSrcDir = new File(buildDir, 'src/generated/kotlin')
@@ -62,3 +55,14 @@ object BuildConfig {
 }
 
 tasks['compileKotlin'].dependsOn generateBuildConfig
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name 'greenDAO Gradle Plugin'
+                description 'Gradle Plugin for greenDAO, the light and fast ORM for Android'
+            }
+        }
+    }
+}

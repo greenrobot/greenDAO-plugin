@@ -33,6 +33,10 @@ dependencies {
 uploadArchives {
     repositories {
         mavenDeployer {
+            pom.project {
+                name 'greenDAO Code Modifier'
+                description 'Code modifier for greenDAO, the light and fast ORM for Android'
+            }
         }
     }
 }
