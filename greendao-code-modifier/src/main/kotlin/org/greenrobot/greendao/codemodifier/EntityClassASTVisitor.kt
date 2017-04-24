@@ -140,7 +140,7 @@ class EntityClassASTVisitor(val source: String, val classesInPackage: List<Strin
 
         // check how the field(s) should be treated
         val annotations = fieldAnnotations
-        if (annotations.any { it.typeName.fullyQualifiedName == "Transient" }
+        if (annotations.any { it.hasType(Transient::class) }
                 || Modifier.isTransient(node.modifiers)
                 || Modifier.isStatic(node.modifiers)) {
             // field is considered transient (@Transient, transient or static)

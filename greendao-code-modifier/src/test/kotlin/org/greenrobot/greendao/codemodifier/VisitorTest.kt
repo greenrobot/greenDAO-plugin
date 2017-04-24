@@ -82,13 +82,15 @@ class VisitorTest : VisitorTestBase() {
         @Entity
         class Foobar {
             String name;
-            @Transient int age;
+            @Transient int transientImport;
+            @org.greenrobot.greendao.annotation.Transient int transientQualified;
         }
         """)!!
         assertThat(entity.properties.size, equalTo(1))
-        assertThat(entity.transientFields.size, equalTo(1))
         assertThat(entity.properties[0].variable.name, equalTo("name"))
-        assertThat(entity.transientFields[0].variable.name, equalTo("age"))
+        assertThat(entity.transientFields.size, equalTo(2))
+        assertThat(entity.transientFields[0].variable.name, equalTo("transientImport"))
+        assertThat(entity.transientFields[1].variable.name, equalTo("transientQualified"))
     }
 
     @Test
