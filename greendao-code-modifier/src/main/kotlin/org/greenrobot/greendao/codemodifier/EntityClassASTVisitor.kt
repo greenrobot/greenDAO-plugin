@@ -200,7 +200,7 @@ class EntityClassASTVisitor(val source: String, val classesInPackage: List<Strin
                 else -> "Node"
             }
             throw RuntimeException("""
-                        $place (see ${codePlace}) has been changed after generation.
+                        $place (see $codePlace) has been changed after generation.
                         Please either mark it with @Keep annotation instead of @Generated to keep it untouched,
                         or use @Generated (without hash) to allow to replace it.
                         """.trimIndent())
@@ -269,7 +269,7 @@ class EntityClassASTVisitor(val source: String, val classesInPackage: List<Strin
                             parseIndexSpec(spec)
                         } catch (e: IllegalArgumentException) {
                             throw RuntimeException("Can't parse @OrderBy.value for " +
-                                    "${typeDeclaration?.name}.${fieldName} because of: ${e.message}.", e)
+                                    "${typeDeclaration?.name}.$fieldName because of: ${e.message}.", e)
                         }
                     }
                 }
@@ -283,10 +283,8 @@ class EntityClassASTVisitor(val source: String, val classesInPackage: List<Strin
         val idAnnotation = fa.proxy<Id>()
 
         if (indexAnnotation?.value?.isNotBlank() ?: false) {
-            throw RuntimeException(
-                    """greenDAO: setting value on @Index is not supported if @Index is used on the properties
-                See '$fieldName' in ${typeDeclaration?.name?.identifier}"""
-            )
+            throw RuntimeException("A value for @Index is only supported if @Index is used inside @Entity. " +
+                    "See field '$fieldName' in class ${typeDeclaration?.name?.identifier}.")
         }
 
         val customType = findConvert(fieldName, fa)
@@ -295,7 +293,7 @@ class EntityClassASTVisitor(val source: String, val classesInPackage: List<Strin
                 id = idAnnotation?.let { EntityIdParams(it.autoincrement) },
                 index = indexAnnotation?.let { PropertyIndex(indexAnnotation.name.nullIfBlank(), indexAnnotation.unique) },
                 isNotNull = node.type.isPrimitiveType || fa.hasNotNull,
-                dbName = columnAnnotation?.nameInDb?.let { it.nullIfBlank() },
+                dbName = columnAnnotation?.nameInDb?.nullIfBlank(),
                 customType = customType,
                 unique = fa.has<Unique>()
         )
@@ -386,7 +384,7 @@ class EntityClassASTVisitor(val source: String, val classesInPackage: List<Strin
         }
         // get <OuterClass> from a.b.c.<OuterClass>.<InnerClass>
         val qualifiedNames = split.takeLast(2)
-        if (outerClassName.equals(qualifiedNames[0])) {
+        if (outerClassName == qualifiedNames[0]) {
             // check if inner class is static, otherwise warn
             if (!staticInnerClasses.contains(qualifiedNames[1])) {
                 throw IllegalArgumentException("Inner class $typeClassName in $outerClassName has to be static. " +
