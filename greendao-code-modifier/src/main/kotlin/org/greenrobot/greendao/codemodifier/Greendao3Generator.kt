@@ -17,7 +17,7 @@ class Greendao3Generator(formattingOptions: FormattingOptions? = null,
 
     fun run(sourceFiles: Iterable<File>,
             schemaOptions: Map<String, SchemaOptions>) {
-        require(schemaOptions.size > 0) { "There should be options for at least one schema" }
+        require(schemaOptions.isNotEmpty()) { "There should be options for at least one schema" }
 
         val classesByDir = sourceFiles.map { it.parentFile }.distinct().map {
             it to it.getJavaClassNames()
@@ -27,7 +27,7 @@ class Greendao3Generator(formattingOptions: FormattingOptions? = null,
         val entities = sourceFiles.asSequence()
                 .map {
                     val entity = context.parse(it, classesByDir[it.parentFile]!!)
-                    if (entity != null && entity.properties.size == 0) {
+                    if (entity != null && entity.properties.isEmpty()) {
                         System.err.println("Skipping entity ${entity.name} as it has no properties.")
                         null
                     } else {
@@ -39,7 +39,7 @@ class Greendao3Generator(formattingOptions: FormattingOptions? = null,
 
         val time = System.currentTimeMillis() - start
         println("Parsed ${entities.size} entities in $time ms among ${sourceFiles.count()} source files: " +
-                "${entities.asSequence().map { it.name }.joinToString()}")
+                entities.asSequence().map { it.name }.joinToString())
 
         if (entities.isNotEmpty()) {
             entities.groupBy { it.schema }.forEach { entry ->
