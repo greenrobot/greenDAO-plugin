@@ -136,7 +136,9 @@ class Greendao3GradlePlugin : Plugin<Project> {
     }
 
     val ANDROID_PLUGINS = listOf(
-            "android", "android-library", "com.android.application", "com.android.library"
+            "android", "android-library", /* Legacy Android Plugin */
+            "com.android.application", "com.android.library", /* Android Plugin */
+            "com.android.feature" /* Instant App Plugin */
     )
 
     /** @throws RuntimeException if no supported plugins applied */
