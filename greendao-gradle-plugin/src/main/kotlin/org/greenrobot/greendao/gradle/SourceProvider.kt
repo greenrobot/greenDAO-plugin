@@ -3,6 +3,8 @@ package org.greenrobot.greendao.gradle
 import com.android.build.gradle.AndroidConfig
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.FeatureExtension
+import com.android.build.gradle.FeaturePlugin
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.api.BaseVariant
@@ -24,7 +26,7 @@ interface SourceProvider {
 }
 
 class AndroidPluginSourceProvider(val project: Project) : SourceProvider {
-    val androidExtension = project.extensions.getByType(AndroidConfig::class.java)
+    private val androidExtension: AndroidConfig = project.extensions.getByType(AndroidConfig::class.java)
 
     override fun sourceFiles(): Sequence<FileTree> =
             androidExtension.sourceSets.asSequence().map { it.java.sourceFiles }
@@ -36,6 +38,8 @@ class AndroidPluginSourceProvider(val project: Project) : SourceProvider {
         project.plugins.all {
             when (it) {
                 is AppPlugin -> applyPlugin(project.extensions[AppExtension::class].applicationVariants,
+                        generatorTask, targetGenDir, writeToBuildFolder)
+                is FeaturePlugin -> applyPlugin(project.extensions[FeatureExtension::class].featureVariants,
                         generatorTask, targetGenDir, writeToBuildFolder)
                 is LibraryPlugin -> applyPlugin(project.extensions[LibraryExtension::class].libraryVariants,
                         generatorTask, targetGenDir, writeToBuildFolder)
@@ -56,12 +60,12 @@ class AndroidPluginSourceProvider(val project: Project) : SourceProvider {
     }
 
     private operator fun <T : Any> ExtensionContainer.get(type: KClass<T>): T {
-        return getByType(type.java)!!
+        return getByType(type.java)
     }
 }
 
 class JavaPluginSourceProvider(val project: Project) : SourceProvider {
-    val javaPlugin = project.convention.getPlugin(JavaPluginConvention::class.java)
+    private val javaPlugin: JavaPluginConvention = project.convention.getPlugin(JavaPluginConvention::class.java)
 
     override fun sourceFiles(): Sequence<FileTree> =
             javaPlugin.sourceSets.asSequence().map { it.allJava.asFileTree }
