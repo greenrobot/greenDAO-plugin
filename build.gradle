@@ -26,7 +26,7 @@ subprojects {
     apply plugin: 'maven'
     apply plugin: 'signing'
 
-    version = "3.2.2"
+    version = "3.2.3-instant-app-SNAPSHOT"
 
     repositories {
         jcenter()
