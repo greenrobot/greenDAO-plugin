@@ -54,13 +54,26 @@ class AndroidPluginSourceProvider(val project: Project) : SourceProvider {
                 variant.registerJavaGeneratingTask(generatorTask, targetGenDir)
             } else {
                 // user takes care of adding to source dirs, just add the task
-                variant.javaCompiler.dependsOn(generatorTask)
+                variant.javaCompileDependsOn(generatorTask)
             }
         }
     }
 
     private operator fun <T : Any> ExtensionContainer.get(type: KClass<T>): T {
         return getByType(type.java)
+    }
+
+    private fun BaseVariant.javaCompileDependsOn(task: Any) {
+        // Android Gradle Plugin 3.3.0 has deprecated variant.getJavaCompile()
+        // https://d.android.com/r/tools/task-configuration-avoidance
+        try {
+            javaCompileProvider.configure {
+                it.dependsOn(task)
+            }
+        } catch (e: NoSuchMethodError) {
+            @Suppress("DEPRECATION")
+            javaCompile.dependsOn(task)
+        }
     }
 }
 
