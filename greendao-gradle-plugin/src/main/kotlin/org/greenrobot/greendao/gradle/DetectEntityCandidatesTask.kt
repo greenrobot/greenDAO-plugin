@@ -99,8 +99,11 @@ open class DetectEntityCandidatesTask : DefaultTask() {
         outputFile.printWriter().use { writer ->
             // first write timestamp to make file hash changed
             writer.println(System.currentTimeMillis())
-            // write candidates into file line by line
-            candidates.forEach {
+            // Write candidates into file line by line and sort them. This avoids
+            // the order of entity classes, e.g. in imports, changing dependent on
+            // the OS a build runs on (Windows sorts A-Z, macOS no order).
+            // https://github.com/greenrobot/greenDAO/issues/880
+            candidates.sorted().forEach {
                 writer.println(it)
             }
         }
