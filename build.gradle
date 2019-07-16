@@ -16,9 +16,7 @@ buildscript {
     }
 }
 
-task wrapper(type: Wrapper) {
-    group 'build setup'
-    gradleVersion '4.5.1'
+wrapper {
     distributionType Wrapper.DistributionType.ALL
 }
 
