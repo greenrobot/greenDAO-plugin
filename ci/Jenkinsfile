@@ -1,0 +1,49 @@
+def gradleArgs = '--stacktrace'
+def isPublish = BRANCH_NAME == 'publish'
+
+pipeline {
+
+    environment {
+        MVN_REPO_LOGIN = credentials('objectbox_internal_mvn_user')
+        MVN_REPO_URL = credentials('objectbox_internal_mvn_repo_http')
+        MVN_REPO_ARGS = "-PinternalObjectBoxRepo=$MVN_REPO_URL " +
+                        "-PinternalObjectBoxRepoUser=$MVN_REPO_LOGIN_USR " +
+                        "-PinternalObjectBoxRepoPassword=$MVN_REPO_LOGIN_PSW"
+        MVN_REPO_UPLOAD_URL = credentials('objectbox_internal_mvn_repo')
+        MVN_REPO_UPLOAD_ARGS = "-PpreferredRepo=$MVN_REPO_UPLOAD_URL " +
+                        "-PpreferredUsername=$MVN_REPO_LOGIN_USR " +
+                        "-PpreferredPassword=$MVN_REPO_LOGIN_PSW "
+    }
+
+    stages {
+
+        stage('init') {
+            agent { label 'linux' }
+            steps {
+                sh 'chmod +x gradlew'
+            }
+        }
+
+        stage ('build') {
+            agent { label 'linux' }
+            steps {
+                sh "./gradlew $gradleArgs $MVN_REPO_ARGS clean check"
+            }
+            post {
+                always {
+                    junit '**/build/test-results/**/TEST-*.xml'
+                }
+            }
+        }
+
+        stage('upload-to-internal') {
+            agent { label 'linux' }
+            steps {
+                sh "./gradlew $gradleArgs $MVN_REPO_ARGS $MVN_REPO_UPLOAD_ARGS uploadArchives"
+            }
+        }
+
+        // TODO Upload to Central. Maybe also use nexus plugin to auto-release from staging repository.
+    }
+
+}

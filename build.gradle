@@ -25,10 +25,10 @@ subprojects {
         google()
         maven {
             credentials {
-                username internalUser
-                password internalPassword
+                username internalObjectBoxRepoUser
+                password internalObjectBoxRepoPassword
             }
-            url "https://example.org/mvnrepo/"
+            url internalObjectBoxRepo
         }
         mavenLocal()
     }
