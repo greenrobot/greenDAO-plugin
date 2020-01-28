@@ -1,5 +1,4 @@
 apply plugin: 'java'
-apply plugin: 'maven'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 group = 'org.greenrobot'
@@ -42,6 +41,8 @@ shadowJar {
 
     classifier = null // would default to "all"
 }
+
+apply from: rootProject.file("gradle/publish.gradle")
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
