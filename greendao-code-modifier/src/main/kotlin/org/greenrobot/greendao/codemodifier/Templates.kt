@@ -14,7 +14,7 @@ import java.io.StringWriter
  *  - provide statically-typed parameters for templates
  * */
 object Templates {
-    private val config = Configuration(Configuration.VERSION_2_3_23)
+    private val config = Configuration(Configuration.VERSION_2_3_29)
 
     init {
         config.setClassForTemplateLoading(this.javaClass, '/' + this.javaClass.`package`.name.replace('.', '/'));
