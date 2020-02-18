@@ -4,7 +4,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 group = 'org.greenrobot'
 // this artifact only needs to update every time we update the JDT version
 // so version it after the contained JDT release
-version = '3.12.2'
+version = '3.20.0'
 
 sourceCompatibility = 1.7
 
@@ -12,7 +12,7 @@ dependencies {
     // "official" packaged version of Eclipse JDT
     // https://objectteams.wordpress.com/2017/01/09/eclipse-neon-2-is-on-maven-central/
     // https://bugs.eclipse.org/bugs/show_bug.cgi?id=484004
-    compile 'org.eclipse.jdt:org.eclipse.jdt.core:3.12.2'
+    compile 'org.eclipse.jdt:org.eclipse.jdt.core:3.20.0'
 }
 
 // include dependencies from shadow configuration in compile tasks
