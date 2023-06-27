@@ -20,12 +20,11 @@ javadoc {
 }
 
 signing {
-    if (project.hasProperty('signing.keyId') && project.hasProperty('signing.password') &&
-            project.hasProperty('signing.secretKeyRingFile')) {
-        sign configurations.archives
-    } else {
-        println "Signing information missing/incomplete for ${project.name}"
-    }
+    // Note: If gpg2 is actually called gpg (e.g. on Windows)
+    // set signing.gnupg.executable=gpg in global gradle.properties.
+    // https://docs.gradle.org/current/userguide/signing_plugin.html#sec:using_gpg_agent
+    useGpgCmd()
+    sign configurations.archives
 }
 
 // Use afterEvaluate or dependencies might be lost in the generated POM
@@ -56,6 +55,7 @@ afterEvaluate { project ->
                     def sonatypeRepositoryUrl = isSnapshot ?
                             "https://oss.sonatype.org/content/repositories/snapshots/"
                             : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                    println("Publishing to Maven Central isSnapshot=$isSnapshot")
                     repository(url: sonatypeRepositoryUrl) {
                         authentication(userName: sonatypeUsername, password: sonatypePassword)
                     }
